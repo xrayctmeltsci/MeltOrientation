@@ -27,8 +27,8 @@ def MVOauto(numphi,numtheta, pergeosmvodatafilepath):
     axDemo = plotGrid(xVertex,yVertex,zVertex,thetaCellEdge,phiCellEdge,-100,35)
     dataPatch = initializePatch(numphi,numtheta,thetaCellEdge,phiCellEdge, xVertex, yVertex, zVertex)
     pergeosdataframe=load_dataframe(pergeosmvodatafilepath)
-    pergeos_mvo_data_to_xyz_points(pergeosdataframe)
-    dataPatch= find_melt_in_patch(dataPatch, meltdataframe)
+    meltdataframe=pergeos_mvodata_to_xyz_points(pergeosdataframe)
+    #dataPatch= find_melt_in_patch(dataPatch, meltdataframe)
     
     return (dataPatch)
 
@@ -114,7 +114,7 @@ def pergeos_mvodata_to_xyz_points(pergeosdataframe):
     return(meltpocket_data)
 
     
-
+"""
 def find_melt_in_patch(dataPatch, meltdataframe):
     for patch in dataPatch.index:
         single_patch_df=meltdataframe[(meltdataframe['Theta'] <= dataPatch.index[patch]['Theta Maximum'])\
@@ -123,6 +123,7 @@ def find_melt_in_patch(dataPatch, meltdataframe):
                                               & (meltdataframe['Phi'] > dataPatch.index[patch]['Phi Minimum'])]
         dataPatch.index[patch]['Melt Volume']=sum(single_patch_df['Melt Pocket Volume'])
     return(dataPatch)
+ """
     
 def load_dataframe(dataframepath):
     dataFrame = pd.read_csv(dataframepath)
