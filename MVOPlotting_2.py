@@ -28,7 +28,7 @@ def MVOauto(numphi,numtheta, pergeosmvodatafilepath):
     dataPatch = initializePatch(numphi,numtheta,thetaCellEdge,phiCellEdge, xVertex, yVertex, zVertex)
     pergeosdataframe=load_dataframe(pergeosmvodatafilepath)
     meltdataframe=pergeos_mvodata_to_xyz_points(pergeosdataframe)
-    #dataPatch= find_melt_in_patch(dataPatch, meltdataframe)
+    dataPatch= find_melt_in_patch(dataPatch, meltdataframe)
     
     return (dataPatch)
 
@@ -114,16 +114,18 @@ def pergeos_mvodata_to_xyz_points(pergeosdataframe):
     return(meltpocket_data)
 
     
-"""
 def find_melt_in_patch(dataPatch, meltdataframe):
-    for patch in dataPatch.index:
-        single_patch_df=meltdataframe[(meltdataframe['Theta'] <= dataPatch.index[patch]['Theta Maximum'])\
-                                      & (meltdataframe['Theta'] > dataPatch.index[patch]['Theta Minimum'])\
-                                          & (meltdataframe['Phi'] <= dataPatch.index[patch]['Phi Maximum']) \
-                                              & (meltdataframe['Phi'] > dataPatch.index[patch]['Phi Minimum'])]
-        dataPatch.index[patch]['Melt Volume']=sum(single_patch_df['Melt Pocket Volume'])
+    for i in range(len(dataPatch.index)):##For every patch...
+        ##crate a dataframe with only melt pockets with the phi, theta range of that patch (including max but not including
+        ##lower bound, and convert the bounds to degrees to be compatible with the melt pocket data from PerGeos)
+        single_patch_df=meltdataframe[(meltdataframe['Theta'] <= np.rad2deg(dataPatch.at[i,'Theta Maximum']))\
+                                          & (meltdataframe['Theta'] > np.rad2deg(dataPatch.at[i,'Theta Minimum']))\
+                                              & (meltdataframe['Phi'] <= np.rad2deg(dataPatch.at[i,'Phi Maximum'])) \
+                                                  & (meltdataframe['Phi'] > np.rad2deg(dataPatch.at[i,'Phi Minimum']))]        
+        dataPatch.at[i,'Melt Volume']=sum(single_patch_df['Melt Pocket Volume'])##store the sums in the dataPatch dataframe
+    print(sum(meltdataframe['Melt Pocket Volume']))
+    print(sum(dataPatch['Melt Volume']))##Off by 100th of a percent but shouldn't be?
     return(dataPatch)
- """
     
 def load_dataframe(dataframepath):
     dataFrame = pd.read_csv(dataframepath)
