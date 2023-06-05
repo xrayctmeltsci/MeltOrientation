@@ -3,7 +3,7 @@
 """
 
 Created on Mon May 15 19:14:53 2023
-@author: James Bader
+@author: James Bader & Laurent Montesi
 
 """
 
@@ -30,8 +30,6 @@ def MVOauto(numphi,numtheta, pergeosmvodatafilepath):
     pergeos_mvo_data_to_xyz_points(pergeosdataframe)
     dataPatch= find_melt_in_patch(dataPatch, meltdataframe)
     
-    
-    
     return (dataPatch)
 
 def defineGrid(numphi,numtheta):
@@ -48,7 +46,12 @@ def defineGrid(numphi,numtheta):
  #   aCell = np.tile(areaCell,(numtheta,1))
     return (xVertex,yVertex,zVertex,thetaCellEdge,phiCellEdge)
 
-
+def x_coordinate_from_spherical(theta, phi):
+    return(np.cos(theta)*np.cos(phi)) # x-coordinates
+def y_coordinate_from_spherical(theta, phi):
+    return(np.sin(theta)*np.cos(phi)) # y-coordinates
+def z_coordinate_from_spherical(theta, phi):
+    return(np.sin(phi))
 
 def initializePatch(numphi,numtheta,thetaCellEdge,phiCellEdge, xVertex, yVertex, zVertex): 
     # define the patches on the unit sphere where the information will be gathered
@@ -62,8 +65,7 @@ def initializePatch(numphi,numtheta,thetaCellEdge,phiCellEdge, xVertex, yVertex,
     numPatch = (numphi-1)*(numtheta-1) # number f patches
     # initialize columns TO DO: ADD THE X< Y< Z COORDINATES OF PATCH EDGES? 
     dataPatch = pd.DataFrame(index=np.arange(numPatch),columns=['Theta Minimum','Phi Minimum','Theta Maximum','Phi Maximum','Patch Area','Melt Volume','Sum of Elongation','Melt Volume per Patch Area'])
-
-    
+  
     dataPatch['Theta Minimum']= np.ravel(thetaMin)
     dataPatch['Theta Maximum']= np.ravel(thetaMax)
     dataPatch['Phi Minimum']= np.ravel(phiMin)
@@ -127,19 +129,12 @@ def load_dataframe(dataframepath):
     return(dataFrame)
 
 def compute_3Dpatch__edges(dataPatch):
-    
     ##compute the x y z coordinates of each corner for each patch
-    dataPatch['X Minimum']=np.cos(dataPatch['Theta Minimum'])*np.cos(dataPatch['Phi Minimum'])
-    dataPatch['Y Minimum']=np.ravel(yVertex)
-    dataPatch['Z Minimum']=np.ravel(zVertex)
-    dataPatch['X Maximum']=np.cos(dataPatch['Theta Minimum'])*np.cos(dataPatch['Phi Maximum'])
-    dataPatch['Y Maximum']=np.ravel(yVertex)
-    dataPatch['Z Maximum']=np.ravel(zVertex)
     points=100
     for patch in dataPatch.index:
         ##compute the path for each edge 
         
-        left_edge=geometric_slerp(dataPatch.index[patch]['X Minimum'],dataPatch.index[patch]['X Minimum'] )
+        
         
         
         
