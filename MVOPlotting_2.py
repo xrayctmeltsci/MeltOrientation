@@ -262,4 +262,41 @@ def plotGrid(xVertex,yVertex,zVertex,thetaCellEdge,phiCellEdge,thetaDemo,phiDemo
 
     return (axDemo)
 
+
+def initialize_polar_plot():
+    ##initialize and nicely set a polar plot for the patches to be graphed
+    polar_figure_object=plt.figure()
+    polar_axis_object=polar_figure_object.add_subplot(projection='polar', frameon=False)
+    polar_axis_object.set_rmax(90)
+    polar_axis_object.set_theta_direction(-1)
+    polar_axis_object.set_theta_zero_location('N')
+    return(polar_figure_object, polar_axis_object)
+
+
+def load_n_set_colormap(dataPatch, dataPatch_color_column_name, desired_colorscale):
+    ##function to load colormap and assign value to column of dataPatch
+    return
+
+
+def weigh_data_volumes(dataPatch):
+    ##divide volume by patch area.
+    return(dataPatch)
+
+def construct_polarpath(thetas, phis):
+    ##construct the path object from the theta and phi values along the patch edge
+    path=[]
+    for i in range(len(thetas)):
+        path.append(thetas[i], phis[i])
+    return(path)
+
+
+def plot_patch_polarplot(dataPatch,polaraxisobject):
+    ##plot each patch from dataPatch
+    for i in range(len(dataPatch.index)):
+        path=construct_polarpath(dataPatch.at[i, 'Theta Edges'], dataPatch.at[i, 'Phi Edges'])
+        patchvol=patches.PathPatch(path, facecolor=dataPatch.at[i, 'Patch Color (volume)'])
+        polaraxisobject.add_patch(patchvol)
+    return(polaraxisobject)
+
+
     
