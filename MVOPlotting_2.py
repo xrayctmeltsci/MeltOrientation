@@ -29,6 +29,7 @@ def MVOauto(numphi,numtheta, pergeosmvodatafilepath):
     pergeosdataframe=load_dataframe(pergeosmvodatafilepath)
     meltvolumedataframe=pergeos_mvodata_to_xyz_points(pergeosdataframe)
     dataPatch= find_melt_in_patch(dataPatch, meltvolumedataframe)
+    dataPatch=compute_thetaphi_patch_edge(dataPatch)
     dataPatch=compute_3Dpatch_edges(dataPatch)
     
     return (dataPatch)
@@ -137,8 +138,43 @@ def load_dataframe(dataframepath):
 #     dataframe[column_name]=dataframe[column_name].astype(object)
 #     return(dataPatch)
 
+def compute_thetaphi_patch_edge(dataPatch):
+    points=50##number of points along each edge
+    dataPatch.at[0, 'Theta Edges']=[0]
+    dataPatch.at[0, 'Phi Edges']=[0]
+    dataPatch['Theta Edges']=dataPatch['Theta Edges'].astype(object)
+    dataPatch['Phi Edges']=dataPatch['Phi Edges'].astype(object)
+    ##initialize empty dataframe columns which can be filled with a list
+    
+    for i in range(len(dataPatch.index)):
+        theta_edges=[]
+        phi_edges=[]##make all theta edges clockwise from the bottom left corner of the patch
+        theta_edges.append(np.linspace(dataPatch.at[i, 'Theta Maximum'],\
+                dataPatch.at[i, 'Theta Maximum'], points))
+        theta_edges.append(np.linspace(dataPatch.at[i, 'Theta Maximum'],\
+                dataPatch.at[i, 'Theta Minimum'], points))
+        theta_edges.append(np.linspace(dataPatch.at[i, 'Theta Minimum'],\
+                dataPatch.at[i, 'Theta Minimum'], points))
+        theta_edges.append(np.linspace(dataPatch.at[i, 'Theta Minimum'],\
+                dataPatch.at[i, 'Theta Maximum'], points))
+            
+        ##make all phi edges clockwise from the bottom left corner of the patch
+        phi_edges.append(np.linspace(dataPatch.at[i, 'Phi Minimum'],\
+                dataPatch.at[i, 'Phi Maximum'], points))
+        phi_edges.append(np.linspace(dataPatch.at[i, 'Phi Maximum'],\
+                dataPatch.at[i, 'Phi Maximum'], points))    
+        phi_edges.append(np.linspace(dataPatch.at[i, 'Phi Maximum'],\
+                dataPatch.at[i, 'Phi Minimum'], points))    
+        phi_edges.append(np.linspace(dataPatch.at[i, 'Phi Minimum'],\
+                dataPatch.at[i, 'Phi Minimum'], points))    
+            
+        dataPatch.at[i, 'Theta Edges']=np.ravel(theta_edges)
+        dataPatch.at[i, 'Phi Edges']=np.ravel(phi_edges)
+        
+    return(dataPatch)
+
+
 def compute_3Dpatch_edges(dataPatch):
-    points=50##points for each edge of a patch   
     
     ##initialize empty column where each cell can be filled by a list
     ##Should this be a separate function? it's tediuous but we want
@@ -157,40 +193,12 @@ def compute_3Dpatch_edges(dataPatch):
         z_edges=[]
         ##compute the x coordinates for the left-most edge, then the top edge, then the 
         ##right-most edge, then the bottom edge. 
-        x_edges.append(x_coordinate_from_spherical((np.linspace(dataPatch.at[i, 'Theta Maximum'],\
-                dataPatch.at[i, 'Theta Maximum'], points)), (np.linspace(dataPatch.at[i, 'Phi Minimum'],\
-                                                                        dataPatch.at[i, 'Phi Maximum'], points))))
-        x_edges.append(x_coordinate_from_spherical((np.linspace(dataPatch.at[i, 'Theta Maximum'],\
-                dataPatch.at[i, 'Theta Minimum'], points)), (np.linspace(dataPatch.at[i, 'Phi Maximum'],\
-                                                                        dataPatch.at[i, 'Phi Maximum'], points))))
-        x_edges.append(x_coordinate_from_spherical((np.linspace(dataPatch.at[i, 'Theta Minimum'],\
-                dataPatch.at[i, 'Theta Minimum'], points)), (np.linspace(dataPatch.at[i, 'Phi Maximum'],\
-                                                                        dataPatch.at[i, 'Phi Minimum'], points))))
-        x_edges.append(x_coordinate_from_spherical((np.linspace(dataPatch.at[i, 'Theta Minimum'],\
-                dataPatch.at[i, 'Theta Maximum'], points)), (np.linspace(dataPatch.at[i, 'Phi Minimum'],\
-                                                                        dataPatch.at[i, 'Phi Minimum'], points))))
-        ##do the same for the Y, Z coordinates.
-        y_edges.append(y_coordinate_from_spherical((np.linspace(dataPatch.at[i, 'Theta Maximum'],\
-                dataPatch.at[i, 'Theta Maximum'], points)), (np.linspace(dataPatch.at[i, 'Phi Minimum'],\
-                                                                        dataPatch.at[i, 'Phi Maximum'], points))))
-        y_edges.append(y_coordinate_from_spherical((np.linspace(dataPatch.at[i, 'Theta Maximum'],\
-                dataPatch.at[i, 'Theta Minimum'], points)), (np.linspace(dataPatch.at[i, 'Phi Maximum'],\
-                                                                        dataPatch.at[i, 'Phi Maximum'], points))))
-        y_edges.append(y_coordinate_from_spherical((np.linspace(dataPatch.at[i, 'Theta Minimum'],\
-                dataPatch.at[i, 'Theta Minimum'], points)), (np.linspace(dataPatch.at[i, 'Phi Maximum'],\
-                                                                        dataPatch.at[i, 'Phi Minimum'], points))))
-        y_edges.append(y_coordinate_from_spherical((np.linspace(dataPatch.at[i, 'Theta Minimum'],\
-                dataPatch.at[i, 'Theta Maximum'], points)), (np.linspace(dataPatch.at[i, 'Phi Minimum'],\
-                                                                        dataPatch.at[i, 'Phi Minimum'], points))))
-                                                                         
-        z_edges.append(z_coordinate_from_spherical((np.linspace(dataPatch.at[i, 'Phi Minimum'],\
-                                                                        dataPatch.at[i, 'Phi Maximum'], points))))
-        z_edges.append(z_coordinate_from_spherical((np.linspace(dataPatch.at[i, 'Phi Maximum'],\
-                                                                        dataPatch.at[i, 'Phi Maximum'], points))))
-        z_edges.append(z_coordinate_from_spherical((np.linspace(dataPatch.at[i, 'Phi Maximum'],\
-                                                                        dataPatch.at[i, 'Phi Minimum'], points))))
-        z_edges.append(z_coordinate_from_spherical((np.linspace(dataPatch.at[i, 'Phi Minimum'],\
-                                                                        dataPatch.at[i, 'Phi Minimum'], points))))
+        for j in range(len(dataPatch.at[i, 'Theta Edges'])):
+            
+            x_edges.append(x_coordinate_from_spherical(dataPatch.at[i, 'Theta Edges'], dataPatch.at[i, 'Phi Edges']))
+            y_edges.append(y_coordinate_from_spherical(dataPatch.at[i, 'Theta Edges'], dataPatch.at[i, 'Phi Edges']))
+            z_edges.append(z_coordinate_from_spherical(dataPatch.at[i, 'Phi Edges']))
+
                                                                          
         ##assign the coordinates for points along the patch in the cell of dataPatch
         dataPatch.at[i,'3D X-Coordinate of Patch Edge']=np.ravel(x_edges)
