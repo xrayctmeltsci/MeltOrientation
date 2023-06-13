@@ -124,7 +124,7 @@ def pergeos_mvodata_to_xyz_points(pergeosdataframe):
             tot_shape.append(shapedat[i])
             tot_phidat.append(phidat[i])
             ##use the most recently accessed theta, phi for calculations
-            tot_xdat.append(x_coordinate_from_spherical(np.deg2rad(theta_zerothreesixty[-1]), np.deg2rad(tot_phidat[-1)))
+            tot_xdat.append(x_coordinate_from_spherical(np.deg2rad(theta_zerothreesixty[-1]), np.deg2rad(tot_phidat[-1])))
             tot_ydat.append(y_coordinate_from_spherical(np.deg2rad(theta_zerothreesixty[-1]), np.deg2rad(tot_phidat[-1])))
             tot_zdat.append(z_coordinate_from_spherical(np.deg2rad(tot_phidat[-1])))##get x, y, z values for each unit vector associated with each melt pocket's theta and phi (equations assumme theta from X towards Y, and phi is latitude)
     
@@ -399,8 +399,8 @@ def plot_eigenvectors(stat_dataframe, polaraxis):
     eigenvectors=stat_dataframe.at[0, 'Eigenvectors']
     eigenvalues=stat_dataframe.at[0, 'Eigenvalues']
     for i in range(3):##for each eigenvector
-        # if eigenvectors[2, i]<0:
-            # eigenvectors[:, i]=eigenvectors[:, i]*-1##
+        if eigenvectors[2, i]<0:
+            eigenvectors[:, i]=eigenvectors[:, i]*-1
         theta=azimuth_from_xy(eigenvectors[0, i], eigenvectors[1, i])
         phi=inclination_from_z(eigenvectors[2, i])
         polaraxis.scatter(theta, phi, s=500*eigenvalues[i], zorder=5)##plot a marker for the theta, phi, for each eigenvector scaled to each eigenvalue's magntitude
