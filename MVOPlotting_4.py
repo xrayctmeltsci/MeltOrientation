@@ -19,6 +19,9 @@ from matplotlib.path import Path
 import random
 
 def MVOauto(numphi,numtheta, pergeosmvodatafilepath):
+    ##dataPatch, meltpocketDF, stat_dataframe, polaraxis=MVOauto(5,20, 'H:/DataBackup_03242022/DataExtraction/0705/200cubes_POREINERTIA.csv')
+    #to run, enter line above (edit file name and path)
+    
     #numphi = 4 #number of bounding levels per latitude
     #numtheta = 6 #number of bounding levels per latitude
     xVertex,yVertex,zVertex,thetaCellEdge,phiCellEdge = defineGrid(numphi,numtheta)
